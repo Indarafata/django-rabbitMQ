@@ -21,5 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('transaction.urls')),
     path('api/', include('master_gudang.urls')),
-    path('api/', include('master_stok.urls')), # Adjusted the path here
+    path('api/', include('master_stok.urls')),
+    path('api/', include('debt.urls')),
+    path('api/', include('master_customer.urls')),
 ]

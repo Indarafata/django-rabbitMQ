@@ -39,9 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Django REST framework 
     'rest_framework',
+    # APP
     'transaction.apps.TransactionConfig',
     'master_stok.apps.MasterStokConfig',
     'master_gudang.apps.MasterGudangConfig',
+    'debt.apps.DebtConfig',
+    'master_customer.apps.MasterCustomerConfig',
     # CORS
     'corsheaders',
     # celery

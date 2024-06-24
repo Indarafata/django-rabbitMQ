@@ -7,17 +7,12 @@ from rest_framework import status
 from transaction.models import Transaction
 from transaction.serializers import TranscationSerializer
 from rest_framework.decorators import api_view
-from .tasks import reduce_stock
+from .tasks import *
 
 from django.http import HttpResponse
 # Create your views here.
 @api_view(['GET', 'POST', 'DELETE'])
 def transaction_list(request):
-    # judul = "<h1>ini transaction</h1>"
-    # isi_konten = "<h3>developer</h3>"
-    # output = judul + isi_konten
-    # return HttpResponse(output)
-    # GET list of tutorials, POST a new tutorial, DELETE all tutorials
     if request.method == 'GET':
         transaction = Transaction.objects.all()
         
@@ -29,21 +24,24 @@ def transaction_list(request):
         return JsonResponse(transaction_serializer.data, safe=False)
     # 'safe=False' for objects serialization
     elif request.method == 'POST':
-        transaction_data = JSONParser().parse(request)
-        tutorial_serializer =  TranscationSerializer(data=transaction_data)
         
         # parsing data
+        transaction_data = JSONParser().parse(request)
+        transaction_serializer =  TranscationSerializer(data=transaction_data)
         kode_barang = transaction_data.get('kode_barang')
         quantity = transaction_data.get('jumlah')
+        customer_id = transaction_data.get('id_customer')
+        harga_total = transaction_data.get('harga')
         
-        if tutorial_serializer.is_valid():
-            tutorial_serializer.save()
+        if transaction_serializer.is_valid():
+            transaction_serializer.save()
             
-            # menguangi stok gudang 
+            # mengurangi stok gudang 
             reduce_stock.delay(kode_barang, quantity)
+            update_debt.delay(customer_id, harga_total)
             
-            return JsonResponse(tutorial_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(transaction_serializer.data, status=status.HTTP_201_CREATED) 
+        return JsonResponse(transaction_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         count = Transaction.objects.all().delete()

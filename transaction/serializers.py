@@ -7,10 +7,9 @@ class TranscationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ('id',
-                  'codeProduct',
                   'tanggal_transaksi',
-                  'kode_transaksi',
                   'jumlah',
                   'harga',
+                  'id_customer',
                   'kode_barang',
                   'kode_gudang',)
